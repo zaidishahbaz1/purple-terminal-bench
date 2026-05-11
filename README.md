@@ -4,15 +4,17 @@ A purple (attacker-side) agent for the [AgentBeats](https://agentbeats.org) **Co
 
 ## Abstract
 
-We implement a **Recursive Language Model (RLM)** scaffold around the Terminal-Bench shell protocol. A root agent (`claude-opus-4-7`) runs a ReAct loop with three tools:
+This agent is a direct application of **Recursive Language Models (RLM)** — the inference strategy introduced by Zhang, Khattab, and Kraska (MIT CSAIL, 2025) in [_Recursive Language Models_](https://arxiv.org/abs/2512.24601). RLM lets a root LM decompose long-context work by handing chunks to a recursive `llm_query()` call inside a Python interpreter, instead of cramming everything into one window. We adopt that pattern wholesale and wrap it around the Terminal-Bench shell protocol.
+
+A root agent (`claude-opus-4-7`) runs a ReAct loop with three tools:
 
 - **`bash`** — execute a command in the task's shell via the green-side `exec_request`. Full stdout/stderr is captured; the chat sees a truncated preview.
 - **`repl`** — a persistent Python interpreter where a `context` list accumulates **untruncated** records of every bash command, output, and prior repl execution. The model can grep, slice, and summarize that history without re-paying the token cost of pulling full outputs into its own window.
 - **`final`** — emit the answer for the task.
 
-Inside the REPL the model has **`llm_query(prompt: str) -> str`**, which dispatches to a fast sub-LLM (`claude-haiku-4-5`) with a ~400K-char input budget. The root model uses it to offload bulk-context work — "scan this 5K-line log for the failure", "summarize this man page", "extract the failing assertion from this trace" — without burning its own context window.
+Inside the REPL the model has **`llm_query(prompt: str) -> str`** — this is the RLM recursive call. It dispatches to a fast sub-LLM (`claude-haiku-4-5`) with a ~400K-char input budget. The root model uses it to offload bulk-context work — "scan this 5K-line log for the failure", "summarize this man page", "extract the failing assertion from this trace" — without burning its own context window.
 
-This is the core idea from [Recursive Language Models](https://arxiv.org/abs/2512.24601) (Zhang, Khattab, Kraska — MIT CSAIL, 2025): instead of stuffing everything into one window, decompose work and offload bulky intermediate state to an interpreter-managed scratchpad with a recursive call to a cheaper model. Recursion is bounded (`MAX_TOTAL_BASH=60`, `MAX_TOTAL_REPL=60`, `MAX_TOTAL_LLM_QUERY=30`, `MAX_INNER_STEPS_PER_TURN=12`).
+Recursion is bounded (`MAX_TOTAL_BASH=60`, `MAX_TOTAL_REPL=60`, `MAX_TOTAL_LLM_QUERY=30`, `MAX_INNER_STEPS_PER_TURN=12`).
 
 ## Architecture
 
@@ -72,8 +74,19 @@ Deployed via Amber manifest (`amber-manifest.json5`) and submitted through the A
 
 ## Citation
 
-> Alex Zhang, Omar Khattab, Tim Kraska. *Recursive Language Models.* arXiv:2512.24601, MIT CSAIL, 2025.
+This work is a direct application of Recursive Language Models. If you build on this agent, please cite the original paper:
+
+```bibtex
+@article{zhang2025recursive,
+  title   = {Recursive Language Models},
+  author  = {Zhang, Alex and Khattab, Omar and Kraska, Tim},
+  journal = {arXiv preprint arXiv:2512.24601},
+  year    = {2025},
+  institution = {MIT CSAIL},
+  url     = {https://arxiv.org/abs/2512.24601},
+}
+```
 
 ## Acknowledgments
 
-Built on the [RDI-Foundation/agent-template](https://github.com/RDI-Foundation/agent-template). Evaluated on [Terminal-Bench 2.0](https://www.tbench.ai).
+Built on the [RDI-Foundation/agent-template](https://github.com/RDI-Foundation/agent-template). Evaluated on [Terminal-Bench 2.0](https://www.tbench.ai). Architecture inspired by [Recursive Language Models](https://arxiv.org/abs/2512.24601) (Zhang, Khattab, Kraska — MIT CSAIL, 2025).
