@@ -1,7 +1,7 @@
 [project]
-name = "terminal-bench-dummy-purple"
+name = "purple-terminal-bench"
 version = "0.1.0"
-description = "Dummy purple agent for terminal-bench evaluations"
+description = "Purple agent for Terminal-Bench 2.0 evaluations"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

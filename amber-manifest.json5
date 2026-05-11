@@ -13,7 +13,7 @@
     additionalProperties: false,
   },
   program: {
-    image: "ghcr.io/zaidishahbaz1/terminal-bench-dummy-purple:latest",
+    image: "ghcr.io/zaidishahbaz1/purple-terminal-bench:latest",
     entrypoint: "uv run --no-sync src/server.py --host 0.0.0.0 --port 9010",
     env: {
       PYTHONUNBUFFERED: "1",
