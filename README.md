@@ -4,7 +4,7 @@ A purple (attacker-side) agent for the [AgentBeats](https://agentbeats.org) **Co
 
 ## Abstract
 
-This agent is a direct application of **Recursive Language Models (RLM)** — the inference strategy introduced by Zhang, Khattab, and Kraska (MIT CSAIL, 2025) in [_Recursive Language Models_](https://arxiv.org/abs/2512.24601). RLM lets a root LM decompose long-context work by handing chunks to a recursive `llm_query()` call inside a Python interpreter, instead of cramming everything into one window. We adopt that pattern wholesale and wrap it around the Terminal-Bench shell protocol.
+This agent implements **Recursive Language Models (RLM)** — the inference strategy introduced by Zhang, Khattab, and Kraska (MIT CSAIL, 2025) in [_Recursive Language Models_](https://arxiv.org/abs/2512.24601). RLM lets a root LM decompose long-context work by handing chunks to a recursive `llm_query()` call inside a Python interpreter, instead of cramming everything into one window. We adopt that pattern wholesale and wrap it around the Terminal-Bench shell protocol.
 
 A root agent (`claude-opus-4-7`) runs a ReAct loop with three tools:
 
@@ -74,7 +74,7 @@ Deployed via Amber manifest (`amber-manifest.json5`) and submitted through the A
 
 ## Citation
 
-This work is a direct application of Recursive Language Models. If you build on this agent, please cite the original paper:
+If you build on this agent, please also cite the original paper:
 
 ```bibtex
 @article{zhang2025recursive,
